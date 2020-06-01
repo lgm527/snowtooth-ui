@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 import { StatusIndicator } from "./StatusIndicator";
 
 const QUERY = gql`
@@ -14,18 +14,28 @@ const QUERY = gql`
 `;
 
 const MUTATION = gql`
-mutation ($status: LiftStatus! $id:ID!) {
-  setLiftStatus(status: $status id: $id) {
-    id
-    name
-    status
+  mutation ($status: LiftStatus! $id:ID!) {
+    setLiftStatus(status: $status id: $id) {
+      id
+      name
+      status
+    }
   }
-}
+`;
+
+const SUBSCRIPTION = gql`
+  subscription {
+    liftStatusChange {
+      id
+      status
+    }
+  }
 `;
 
 function App() {
   const { loading, data } = useQuery(QUERY);
   const [setStatus] = useMutation(MUTATION);
+  useSubscription(SUBSCRIPTION);
   if (loading) return <p>loading lifts...</p>;
 
   return <section>
